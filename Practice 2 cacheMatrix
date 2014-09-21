@@ -2,6 +2,7 @@
 
 makeCacheMatrix <- function (x = matrix())
 {
+  #Variables declaration
   det <- NULL
   matinv <- NULL
   
@@ -29,7 +30,7 @@ makeCacheMatrix <- function (x = matrix())
     }
     
     
-    #Calculation of 
+    #Calculation of matrix of vector
     vprod <- integer()
     
     for ( i in c(1:ncol(mat)))
@@ -42,10 +43,11 @@ makeCacheMatrix <- function (x = matrix())
       
     }
     
-    #Porduct of matrix
+    #Product of matrix
     matr <- matrix(vprod, nrow=ncol(mat), ncol=ncol(mat)*2, byrow = T)
     result <- apply(matr, 2, prod) * c(rep(1,ncol(mat)), rep(-1,ncol(mat)))
     
+    #Validation for matrix 2x2
     if (ncol(mat) > 2)
     {
       det <-sum(result)
@@ -60,6 +62,7 @@ makeCacheMatrix <- function (x = matrix())
   
   getinv <- function () matinv
   
+  #Main calculos of Inverse Matrix
   calcinv <- function(mat)
   {
     matcalc <- mat
@@ -80,9 +83,10 @@ makeCacheMatrix <- function (x = matrix())
      }
    }
    
+   #Assigment of inv signus
    matcalc <- matneg * matcalc
    
-   
+   #Calculus of det of matrix
    matinv <<- matcalc / det
    matinv
   }
@@ -98,6 +102,7 @@ makeCacheMatrix <- function (x = matrix())
 
 cacheSolve  <- function(x, ...)
 {
+  #Get cache matrix
   matinv <- x$getinv()
   
   if (!is.null(matinv))
@@ -106,9 +111,14 @@ cacheSolve  <- function(x, ...)
     return (matinv)
   }
   
+  #Get data
   mat <- x$get()
+  
+  #Calc of Det of main Matrix and stored in Cache
   det <- x$calcdet(mat)
   x$setdet(det)
+  
+  #Calc of Inv of Matrix
   result <- x$calcinv(mat)
   result
 }
