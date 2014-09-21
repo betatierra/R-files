@@ -1,0 +1,114 @@
+
+
+makeCacheMatrix <- function (x = matrix())
+{
+  det <- NULL
+  matinv <- NULL
+  
+  set <- function (y)
+  {
+    x <<- y
+    det <<- NULL
+    matinv <<- NULL
+  }
+  
+  get <- function () x
+  
+  setdet <- function (d) det <<- d
+  
+  getdet <- function () det
+  
+  calcdet <- function (mat)
+  {
+    matcalc <- mat
+    
+    # Creation of matrix for calculation
+    for (ma in c(1:(ncol(mat)-1)))
+    {
+      matcalc<- cbind(matcalc, mat[,ma])
+    }
+    
+    
+    #Calculation of 
+    vprod <- integer()
+    
+    for ( i in c(1:ncol(mat)))
+    { 
+      vprod <- 
+        c( vprod,
+           matcalc[i,c(i:(i+ncol(mat)-1))],
+           matcalc[i,c((ncol(mat)+(-1*i+1)):(ncol(matcalc)+(-1*i+1)))]
+        )
+      
+    }
+    
+    #Porduct of matrix
+    matr <- matrix(vprod, nrow=ncol(mat), ncol=ncol(mat)*2, byrow = T)
+    result <- apply(matr, 2, prod) * c(rep(1,ncol(mat)), rep(-1,ncol(mat)))
+    
+    if (ncol(mat) > 2)
+    {
+      det <-sum(result)
+    }
+    else 
+    {
+      det <- sum(result[-c(2,4)])
+    }
+    #return
+    det
+  }
+  
+  getinv <- function () matinv
+  
+  calcinv <- function(mat)
+  {
+    matcalc <- mat
+    matneg  <- mat
+    hcol <- -1
+    
+   for (i in c(1:nrow(mat)))
+   {
+     hcol <- hcol * -1
+     ci <- hcol
+     for (ii in c(1:ncol(mat)))
+     {
+       matcalc[ii,i] <- calcdet(mat[-1*i,-1*ii])
+       
+       #build matrix of negative prod
+       matneg [i, ii] <- ci
+       ci <- ci * -1
+     }
+   }
+   
+   matcalc <- matneg * matcalc
+   
+   
+   matinv <<- matcalc / det
+   matinv
+  }
+  
+  setmatinv <- function(inverse) matinv <<- inverse
+  
+  #Methods
+  list(get = get, set = set, 
+       getdet = getdet, setdet = setdet,
+       getinv = getinv, setmatinv = setmatinv,
+       calcdet = calcdet, calcinv = calcinv)
+}
+
+cacheSolve  <- function(x, ...)
+{
+  matinv <- x$getinv()
+  
+  if (!is.null(matinv))
+  {
+    message("Getting cache inv matrix")
+    return (matinv)
+  }
+  
+  mat <- x$get()
+  det <- x$calcdet(mat)
+  x$setdet(det)
+  result <- x$calcinv(mat)
+  result
+}
