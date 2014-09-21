@@ -1,0 +1,9 @@
+
+#Test cache function
+#Requiered previus execution of Practice 2 code
+
+m <- matrix(c(3,2,-1,2,-1,2,5,4,1), ncol=3)
+
+temp <- makeCacheMatrix(m)
+
+cacheSolve(temp)
